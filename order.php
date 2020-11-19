@@ -314,7 +314,7 @@ crossorigin="anonymous">
     border: 2px solid transparent;
     text-transform: capitalize;
     border: 2px solid transparent;
-    width: 112px;
+    width: 135px;
     height: 50px;
     outline: none;
     cursor: pointer;
@@ -332,7 +332,7 @@ crossorigin="anonymous">
     border: 2px solid transparent;
     text-transform: capitalize;
     border: 2px solid transparent;
-    width: 112px;
+    width: 135px;
     height: 50px;
     outline: none;
     cursor: pointer;
@@ -416,7 +416,7 @@ Light Box
     <div class="col-md-12 graphs">
 	<div class="xs">
        	<div class="row">
-       		<div class="col-sm-6 col-md-8" style="margin-bottom:5px">
+       		<div class="col-sm-6 col-md-10 col-md-offset-1" style="margin-bottom:5px">
 <?php
 			if($malichsuphieu != null && $malichsuphieu != "")
 			{

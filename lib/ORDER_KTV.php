@@ -34,7 +34,7 @@ class ORDER_KTV extends DbConnection{
 	}
 
 	public function updateKTVtoOrderID( $ten_KTV, $malichsuphieu  ) {
-		echo $sql = "UPDATE [MASSAGE_VL].[dbo].[tblLichSuPhieu] SET NVPhucVu = N'$ten_KTV' where MaLichSuphieu like '$malichsuphieu'";
+		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblLichSuPhieu] SET NVPhucVu = N'$ten_KTV' where MaLichSuphieu like '$malichsuphieu'";
 			try
 			{
 				$rs = sqlsrv_query($this->conn, $sql);
