@@ -1,30 +1,7 @@
-<?php
-require('lib/db.php');
-require('functions/lichsuphieu.php');
-session_start();
-
-	try 
-	{
-		if(isset($_SESSION['MaNV']))
-		{
-			$id = $_SESSION['MaNV'];
-			//---set tình trang nhân viên không login
-			$sql="UPDATE tblDMNhanVien SET IsLogInWeb = 0 WHERE MaNV like '$id'";
-			$rs=sqlsrv_query($conn,$sql);
-			
-			//---insert lich su ra vao
-			InsertLichSuRaVao($conn,$id);
-			
-			$_SESSION = array();
-			session_destroy();
-		}
-	} 
-	catch(Exception $e) {	}
-?>
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Quản lý đánh giá dịch vụ </title>
+<title>Giải pháp bán hàng nhà hàng ZinRES</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="keywords" content="Phần mềm quản lý Spa ZinSPA">
@@ -33,7 +10,7 @@ session_start();
 </head>
 <body>
 
-	<h1 class="wthree">ĐÁNH GIÁ CHẤT LƯỢNG DỊCH VỤ</h1>
+	<h1 class="wthree">GIẢI PHÁP BÁN HÀNG NHÀ HÀNG</h1>
 	<div class="container login-section">
 	<div class="login-w3l">	
 				<div class="login-form">			
@@ -62,7 +39,7 @@ session_start();
 	</div> 	
     <div class="footer">
 		<p class="title">CÔNG TY TNHH GIẢI PHÁP CÔNG NGHỆ ZINTECH</h2>
-        <p>Phone:02839310042 - Hotline:0966885959</p>
+        <p>Phone:02839310042 - Hotline:0938 845 998</p>
         <p>Website:www.zintech.vn</p>
         <p>Email:sales@zintech.vn</p>
         </br>

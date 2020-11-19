@@ -8,91 +8,95 @@ if (isset($_SESSION['previous'])) {
    if (basename($_SERVER['PHP_SELF']) != $_SESSION['previous']) {
         unset($_SESSION['SoLuong']);
 		unset($_SESSION['TenHangBan']);
+		unset($_SESSION['MaDVT']);
 		unset($_SESSION['Gia']);
-		unset($_SESSION['maphieu']);
+		unset($_SESSION['MaLichSuPhieu']);
+		unset($_SESSION['NhapMon']);
         ### or alternatively, you can use this for specific variables:
-        ### unset($_SESSION['varname']);
+        ### unset($_SESSION['varname']); 
    }
 }
-if(!isset($_SESSION['MaNV'])) 
+
+if(!isset($_SESSION['TenSD'])) //------check session nhân viên, ko có thoát ra đăng nhập lại
 {
 ?>
 <script>
-		//setTimeout('window.location="login.php"',0);
+	setTimeout('window.location="login.php"',0);
 </script>
 <?php
 }
 
-$id=$_SESSION['MaNV'];
-$tenktv = $_SESSION['TenNV'];
-$trungtam = "GIẢI PHÁP QUẢN LÝ BÁN HÀNG CHUYÊN NGHIỆP";
-
-$makhu =  ""; $magiuong = "";
+$matrungtam = $_SESSION['MaTrungTam'];
+$tentrungtam = $_SESSION['TenTrungTam'];
+//
+//--------------------XỬ LÝ KHU, BÀN ----------------------//
+//
+$makhu = $_SESSION['MaKhu']; 
 if(isset($_GET['makhu']))
 {
-	$makhu = $_GET['makhu'];
+	$makhu = $_GET['makhu']; //---check ok
+}
+//
+//var_dump ($_SESSION['makhu'] = $makhu);
+$maban = "";
+if(isset($_GET['maban']))
+{
+	$maban = $_GET['maban'];
 } 
-var_dump ($_SESSION['makhu'] = $makhu);
-
-if(isset($_GET['magiuong']))
-{
-	$magiuong = $_GET['magiuong'];
-} 
-var_dump($_SESSION['magiuong'] = $magiuong);
-//
-//---xử lý có nhập món ko ?
-//
-$nhapmon = "0";
-if(@$_GET['nhapmon'] != null)
-{
-	$nhapmon = @$_GET['nhapmon'];
-}
-else 
-{
-	$nhapmon = "0";
-}
-//	lấy giá trị get khác
-//
-$maphieu = ""; 
-if(isset($_GET['maphieu']))
-{
-	var_dump ($maphieu = $_GET['maphieu']);
-}
-
 //
 //	lưu lại session khi click khu
 //
-if($makhu != null && $magiuong != "")
+if($makhu != null && $maban != "")
 {
 	$_SESSION['MaKhu'] = $makhu;
-	$_SESSION['MaGiuong'] = $magiuong;
+	$_SESSION['MaBan'] = $maban;
 }
 
-if(isset($_SESSION['MaGiuong'])) 
+if(isset($_SESSION['MaBan'])) 
 {
-	$magiuong = $_SESSION['MaGiuong'];
+	$maban = $_SESSION['MaBan'];
 	//
 	//	lay cac gia tri tu lich su phieus
 	//
-	$l_sql = "Select * from tblLichSuPhieu Where MaBan = '$magiuong' and DaTinhTien = 0 and PhieuHuy = 0";
+	$l_sql = "Select * from tblLichSuPhieu Where MaBan = '$maban' and DaTinhTien = 0 and PhieuHuy = 0 and ThoiGianDongPhieu is null";
 	$rs3=sqlsrv_query($conn,$l_sql);
 	while($r3=sqlsrv_fetch_array($rs3))
 	{
-		$maphieu = $r3['MaLichSuPhieu'];
-		$makhach = $r3['MaKhachHang'];
-		$tenkhach = $r3['TenKhachHang'];
+		$malichsuphieu = $r3['MaLichSuPhieu'];
+		$makhachhang = $r3['MaKhachHang'];
+		$tenkhachhang = $r3['TenKhachHang'];
 	}
+
 	sqlsrv_free_stmt( $rs3);
 }
-?>
+//
+//
+$malichsuphieu = ""; $tenkhachhang = "";
+if(isset($_GET['malichsuphieu']))
+{
+	$malichsuphieu = $_GET['malichsuphieu'];
+}
+//
+//------------set trạng thái cờ để refresh trang ---------//
+//
+$nhapmon = 0;
+if(isset($_SESSION['NhapMon']))
+{
+	$nhapmon = $_SESSION['NhapMon'];
+}
+else 
+{
+	$nhapmon = 0;
+}
 
+?>
 <!DOCTYPE HTML>
 <html>
 <head>
-<title>Giải pháp quản lý SPA toàn diện - ZinSPA</title>
+<title>Giải pháp quản lý Spa-Massage chuyên nghiệp - ZinRES</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="keywords" content="Phần mềm quản lý SPA ZinSpa" />
+<meta name="keywords" content="Phần mềm quản lý Spa-massage ZinSpa" />
 <script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false); function hideURLbar(){ window.scrollTo(0,1); } </script>
 
 <!-- Bootstrap Core CSS -->
@@ -102,12 +106,105 @@ if(isset($_SESSION['MaGiuong']))
 <link href="css/style1.css" rel='stylesheet' type='text/css' />
 <link href="css/font-awesome.css" rel="stylesheet"> 
 <link href="css/search-form-home.css" rel='stylesheet' type='text/css' />
+<link href="css/custom.css" rel="stylesheet">
 <!-- jQuery -->
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <!---//webfonts--->  
 <!-- Bootstrap Core JavaScript -->
 <script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <style> 
+/*--new menu 19042020 ---*/
+.li-level1
+{
+  padding: 8px 8px 8px 5px;
+}
+
+.menu-level1 {
+  font-size: 14px;
+  color: #818181;
+}
+
+.menu-level1:hover {
+  color: #f1f1f1;
+}
+
+.menu-level2 {
+  padding: 8px 8px 8px 15px;
+  font-size: 14px;
+  color: #818181;
+}
+
+.menu-level2:hover {
+  color: #f1f1f1;
+}
+
+.sidenav {
+  height: 100%;
+  width: 200px;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  background-color: #111;
+  overflow-x: hidden;
+  padding-top: 20px;
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a, .dropdown-btn {
+  padding: 8px 8px 8px 5px; /*top right bottom left*/
+  text-decoration: none;
+  font-size: 14px;
+  color: #818181;
+  display: block;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+/* On mouse-over */
+.sidenav a:hover, .dropdown-btn:hover {
+  color: #f1f1f1;
+}
+
+/* Main content */
+.main {
+  margin-left: 200px; /* Same as the width of the sidenav */
+  font-size: 20px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+/* Add an active class to the active dropdown button */
+.active {
+  background-color: green;
+  color: white;
+}
+
+/* Dropdown container (hidden by default). Optional: add a lighter background color and some left padding to change the design of the dropdown content */
+.dropdown-container {
+  display: none;
+  background-color: #262626;
+  padding-left: 12px;
+  line-height: 2em;
+}
+
+/* Optional: Style the caret down icon */
+.fa-caret-down {
+  float: right;
+  padding-right: 8px;
+}
+
+/* Some media queries for responsiveness */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 12px;}
+}
+
+/*-----end style new menu 19042020*/
+
 #myDIV {
     margin: 10px; /*original: 25px */
     width: 100%; /*original: 550px */
@@ -193,7 +290,7 @@ if(isset($_SESSION['MaGiuong']))
     margin-bottom: 5px;
 	}
 
-	.khu {
+.khu {
     background: #0073aa;
     color: #fff;
     font-size: 1em;
@@ -210,14 +307,14 @@ if(isset($_SESSION['MaGiuong']))
     margin-bottom: 5px;
 	}
 
-.giuong_active {
+.ban_dangchon {
     background: #F9B703;
     color: #fff;
     font-size: 1em;
     border: 2px solid transparent;
     text-transform: capitalize;
     border: 2px solid transparent;
-    width: 115px;
+    width: 100px;
     height: 100px;
     outline: none;
     cursor: pointer;
@@ -228,14 +325,32 @@ if(isset($_SESSION['MaGiuong']))
     margin-bottom: 5px;
 	}
 
-	.giuong {
+.ban_cokhach {
+	background: #F9B703; /*#FFFF99;  /*#DAFFC0; #DAFFC0;*/
+    color: #000;
+    font-size: 1em;
+    border: 2px solid transparent;
+    text-transform: capitalize;
+    border: 2px solid transparent;
+    width: 100px;
+    height: 100px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    padding: 0.5em 0;
+    margin-top: 0em;
+    margin-left: 5px;
+    margin-bottom: 5px;
+	}
+
+.ban_trong {
     background: #0073aa;
     color: #fff;
     font-size: 1em;
     border: 2px solid transparent;
     text-transform: capitalize;
     border: 2px solid transparent;
-    width: 115px;
+    width: 100px;
     height: 100px;
     outline: none;
     cursor: pointer;
@@ -247,105 +362,58 @@ if(isset($_SESSION['MaGiuong']))
 	}
 	
 /*quy css*/
-	.col-md-12 .grid	{
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr ;
-		box-sizing: border-box;
-		
-		grid-row-gap: 7px;
-	}
+@media (min-width:1024px){
+  .col-md-12 .grid  {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+    box-sizing: border-box;
+    
+    grid-row-gap: 7px;
+  }
+}
+
+@media (min-width:600px) and (max-width: 1024px) {
+  .col-md-12 .grid  {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    box-sizing: border-box;
+    
+    grid-row-gap: 7px;
+  }
+}
+
+@media (max-width:600px){
+  .col-md-12 .grid  {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    box-sizing: border-box;
+    
+    grid-row-gap: 5px;
+  }
+}
 </style>
 </head>
 <body>
 <div id="wrapper">
-<!-- Navigation -->
-        <nav class="top1 navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand"> <?php echo $trungtam; ?></a>
-            </div>
-
-
-
-        <div class="col-md-5">
-            <form action="search.php" class="search-form" method="get">
-                <div class="form-group has-feedback">
-            		<label for="search" class="sr-only">Search</label>
-            		<input type="text" class="form-control" name="query" id="search" placeholder="search">
-              		<span class="glyphicon glyphicon-search form-control-feedback"></span>
-            	</div>
-            </form>
-        </div>
-  
-
-        </nav>
+	<?php include 'menukhu.php'; ?>
     <div id="page-wrapper">
     <div class="col-md-12 graphs">
 	<div class="xs">
-		<h4>KHU</h4>
-        <form action="home.php" method="get">
-       	<div class="row">
-       		<div class="col-md-12" style="margin-bottom:5px">
-<?php 
-    $l_sql="select * from tblDMKhu Where  MaKhu in (Select MaKhu from tblDMBan Group by MaKhu) Order by MaKhu";//MaKhu like '%spa%' and
-	//echo $l_sql;
-	$i = 1;
-	try
-	{
-		$rskhu=sqlsrv_query($conn, $l_sql);
-		if(sqlsrv_has_rows($rskhu) != false)
-		{
-			while ($r1 = sqlsrv_fetch_array($rskhu))
-			{
-				if($makhu == "")
-					$makhu = $r1['MaKhu'];
-				if($makhu == $r1['MaKhu'])
-				{
-					//F9B703
-?>
-          		<button type="submit" name="makhu" value="<?php echo $r1['MaKhu']; ?>" class="khu_active"><?php echo $r1['MoTa']; ?></button>
-          	
-<?php
-				}
-				else
-				{
-?>
-          		<button type="submit" name="makhu" value="<?php echo $r1['MaKhu']; ?>" class="khu"><?php echo $r1['MoTa']; ?></button>
-<?php
-				}
-				//echo "khu".$i;
-				$i = $i + 1;
-			}
-		}
-	}
-	catch (Exception $e) {
-		echo $e->getMessage();
-	}
-?>
-			</div>
-	    </div>
-	</form>
-	<h4>BÀN</h4>  
-	
+	<h4>DANH SÁCH GIƯỜNG</h4>
 	<div class="row">
 		<div class="col-md-12">
-			<div class="grid" >
+			<div class="grid">
 <?php 
 	if (isset($_GET['pageno'])) {
 	   $pageno = $_GET['pageno'];
 	} else {
 		$pageno = 1;
 	}
-	$no_of_records_per_page = 18;
+	$no_of_records_per_page = 20; //18
 	$startRow = ($pageno-1) * $no_of_records_per_page;
 	$endpoint = $startRow + $no_of_records_per_page;
 	
-	 $total_pages_sql = "select  COUNT(*) from [tblDMBan]  Where MaKhu = '$makhu'";
+	$total_pages_sql = "select  COUNT(*) from [tblDMBan]  Where MaKhu = '$makhu'";
 	try
 	{
 		$rs_total=sqlsrv_query($conn,$total_pages_sql);
@@ -355,87 +423,84 @@ if(isset($_SESSION['MaGiuong']))
 	catch (Exception $e) {
 		echo $e->getMessage();
 	}
-					
-    $sql="select * from 
-					(
-						SELECT *, ROW_NUMBER() OVER (ORDER BY MaBan) as rowNum FROM [tblDMBan] Where MaKhu = '$makhu'
-					) sub 
-					WHERE rowNum >  '$startRow' and rowNum <= '$endpoint'";
+	//
+	//----------------danh sach ban ------------------------//
+	//
+    $sql="select * from (SELECT *, ROW_NUMBER() OVER (ORDER BY MaBan) as rowNum FROM [tblDMBan] Where MaKhu = '$makhu') sub WHERE rowNum >  '$startRow' and rowNum <= '$endpoint'";
 	try
 	{
-		$rs=sqlsrv_query($conn,$sql);
-		$i=1;
-		while($r2=sqlsrv_fetch_array($rs))
-		{
-			if($magiuong == "")
-					$magiuong = $r2['MaBan'];
-			if($magiuong == $r2['MaBan'])
-			{
-?>				<form action="order.php" method="get">
-				<button type="submit" name="magiuong" value="<?php echo $r2['MaBan']; ?>" class="giuong_active">
-<?php echo $r2['MaBan']."<br>"; 
-/*hiển thị info khách (nếu có)*/
-$sql="SELECT * FROM [tblLichSuPhieu] a LEFT JOIN [tblDMBan] b ON a.MaBan=b.MaBan WHERE Dangngoi=1";
-$result = sqlsrv_query($conn,$sql);
-try	{
-		if(sqlsrv_has_rows($result) != false) {
-			while ($r1 = sqlsrv_fetch_array($result)) {
-					if ($r2['MaBan']==$r1['MaBan']){ ?>
-					<?php echo $makh=$r1['MaKhachHang']."<br>"; ?>
-					<input type="hidden" name="maphieu" value="<?=$r1['MaLichSuPhieu']?>" />
-					<input type="hidden" name="xora" value="yes" />
-										
-					<?php }//echo $tienDV=number_format($r1['TienDichVu'],0,",",".")."<br>";
-					//echo $giovao=date_format($r1['GioVao'],'d-M H:m');//h:mA for 12hr-format
+		$mabantemp = ""; $giovao = ""; $tiendv = ""; $malichsuphieutemp = ""; $tenkhachhang = "";
 
+		$rs=sqlsrv_query($conn,$sql); 
+		while($r2=sqlsrv_fetch_array($rs))	//-----duyet danh sach ban
+		{
+			$r2['MaBan'];
+			$mabantemp = ""; $giovao = ""; $tiendv = ""; $malichsuphieutemp = "";
+			$mabantemp = $r2['MaBan'];
+			//
+			//
+			if($maban == "")
+					$maban = $r2['MaBan']; 	//-----neu chua co ban chon thi chon ban dau tien
+?>				
+			<form action="order.php" method="get">
+<?php
+			$sql="SELECT * FROM [tblLichSuPhieu] WHERE MaBan like '$mabantemp' and DaTinhTien = 0 and ThoiGianDongPhieu is null";
+			$result = sqlsrv_query($conn,$sql);
+			try	
+			{
+				if(sqlsrv_has_rows($result) != false) 
+				{
+					while ($r1 = sqlsrv_fetch_array($result)) 
+					{
+						$r1['GioVao'];
+						$r1['TienThucTra'];
+						$r1['MaLichSuPhieu'];
+						$r1['TenKhachHang'];
+
+						$giovao = strval(date_format($r1['GioVao'],'H:m'));
+						$tiendv = strval(number_format($r1['TienThucTra'],0,",","."));
+						$malichsuphieutemp = $r1['MaLichSuPhieu'];	
+						$tenkhachhang = $r1['TenKhachHang'];
+					}
+				}
 			}
-		}
-	}
-catch (Exception $e) {
-	echo $e->getMessage();
-	} 
-/*End hiển thị info khách (nếu có)*/
-?>		
-				</button></form>
+			catch (Exception $e) {
+				echo $e->getMessage();
+			}
+			
+			if($malichsuphieutemp != "")
+			{
+				//echo $malichsuphieutemp; ok
+?>
+				<button type="submit" name="maban" value="<?php echo $mabantemp; ?>" class="ban_cokhach">
 <?php
 			}
 			else
 			{
-?>				<form action="order.php" method="get">
-          		<button type="submit" name="magiuong" value="<?php echo $r2['MaBan']; ?>" class="giuong">
-<?php echo $r2['MaBan']."<br>"; 
-/*hiển thị info khách (nếu có)*/
-$sql="SELECT * FROM [tblLichSuPhieu] a LEFT JOIN [tblDMBan] b ON a.MaBan=b.MaBan WHERE Dangngoi=1";
-$result = sqlsrv_query($conn,$sql);
-try	{
-		if(sqlsrv_has_rows($result) != false) {
-			while ($r1 = sqlsrv_fetch_array($result)) {
-					if ($r2['MaBan']==$r1['MaBan']){ ?>
-					<?php echo $makh=$r1['MaKhachHang']."<br>"; ?>
-					<input type="hidden" name="maphieu" value="<?=$r1['MaLichSuPhieu']?>" />
-					<input type="hidden" name="xora" value="yes" />					
-					<?php }//echo $tienDV=number_format($r1['TienDichVu'],0,",",".")."<br>";
-					//echo $giovao=date_format($r1['GioVao'],'d-M H:m');//h:mA for 12hr-format
-
-			}
-		}
-	}
-catch (Exception $e) {
-	echo $e->getMessage();
-	} 
-/*End hiển thị info khách (nếu có)*/
-?>		
-				</button></form>
+?>
+				<button type="submit" name="maban" value="<?php echo $mabantemp; ?>" class="ban_trong">
 <?php
 			}
-		}
-		sqlsrv_free_stmt( $rs);
+					echo $mabantemp."<br>"; 
+					echo $giovao."<br>";
+					echo $tenkhachhang."<br>";
+					echo $tiendv."<br>";
+?>
+				<input type="hidden" name="malichsuphieu" value="<?php echo $malichsuphieutemp; ?>" />
+				<input type="hidden" name="xora" value="yes" />
+				</button>
+			</form>
+<?php
+		}//end while danh sach ban
+
+		sqlsrv_free_stmt( $rs); //-----giải phóng bộ nhớ
 	}
 	catch (Exception $e) {
 		echo $e->getMessage();
-	}				
+	}			
 ?>
 			</div>
+			<!-- end grid -->
 		</div>
 		<!-- /#col-md-12 -->
 	</div>
@@ -478,7 +543,7 @@ catch (Exception $e) {
 </div>
 <!-- /#wrapper -->
 <!-- Nav CSS -->
-<link href="css/custom.css" rel="stylesheet">
+
 <!-- Metis Menu Plugin JavaScript -->
 <script src="js/metisMenu.min.js"></script>
 <script src="js/custom.js"></script>
@@ -486,29 +551,46 @@ catch (Exception $e) {
 <script type="text/javascript" src="js/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 <link href="js/jquery-ui-1.12.1.custom/jquery-ui.min.css" rel="stylesheet" /> 
 <script>
+	/* Loop through all dropdown buttons to toggle between hiding and showing its dropdown content - This allows the user to have multiple dropdowns without any conflict */
+var dropdown = document.getElementsByClassName("dropdown-btn");
+var i;
+
+for (i = 0; i < dropdown.length; i++) {
+  dropdown[i].addEventListener("click", function() {
+  	this.classList.toggle("active");
+  	var dropdownContent = this.nextElementSibling;
+  	if (dropdownContent.style.display === "block") {
+  		dropdownContent.style.display = "none";
+  	} else {
+  		dropdownContent.style.display = "block";
+  	}
+  });
+}
+</script>
+<script>
 $('.navbar-toggle').on('click', function() {
   $('.sidebar-nav').toggleClass('block');  
    
 });
 </script>
 <?php
-	if($nhapmon == "" || $nhapmon == null || $nhapmon == "0")	// ko co đánh giá hay nhập tip thì refresh lại
+	if($nhapmon == 0)	// ko co dang nhap mon
 	{
 ?>
 <script>
-     // var time = new Date().getTime();
-     // $(document.body).bind("mousemove keypress", function(e) {
-         // time = new Date().getTime();
-     // });
+     var time = new Date().getTime();
+     $(document.body).bind("mousemove keypress", function(e) {
+         time = new Date().getTime();
+     });
 
-     // function refresh() {
-         // if(new Date().getTime() - time >= 5000) //5s 1 phut: 60000
-             // window.location.reload(true);
-         // else 
-             // setTimeout(refresh, 2000);
-     // }
+     function refresh() {
+         if(new Date().getTime() - time >= 5000) //5s 1 phut: 60000
+             window.location.reload(true);
+         else 
+             setTimeout(refresh, 2000);
+     }
 
-     // setTimeout(refresh, 2000);
+     setTimeout(refresh, 2000);
 </script>
 <?php 
 	}
