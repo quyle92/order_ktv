@@ -74,8 +74,7 @@ if( isset($_GET['select_ktv']))
 											    <?php
 												}
 											    ?>
-											    <!-- <li data-target="#myCarousel" data-slide-to="1"></li>
-											    <li data-target="#myCarousel" data-slide-to="2"></li> -->
+			
 											  </ol>
 
 											  <!-- Wrapper for slides -->
@@ -90,13 +89,7 @@ if( isset($_GET['select_ktv']))
 											    <?php 
 												$i++;}
 											    ?>
-											   <!--  <div class="item">
-											      <img src="chicago.jpg" alt="Chicago">
-											    </div>
-
-											    <div class="item">
-											      <img src="ny.jpg" alt="New York">
-											    </div> -->
+				
 											  </div>
 
 											  <!-- Left and right controls -->

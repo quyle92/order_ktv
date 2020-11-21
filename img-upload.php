@@ -20,7 +20,7 @@ if(!isset($_SESSION['MaNV']))
 $id= isset( $_SESSION['MaNV'] ) ?: "";
 $tenktv = isset( $_SESSION['TenNV'] ) ?: "";
 $trungtam = "GIẢI PHÁP QUẢN LÝ BÁN HÀNG CHUYÊN NGHIỆP";
-echo $img_upload_page = $_SERVER['PHP_SELF'];
+$_SESSION['back'] = $_SERVER['REQUEST_URI'];
 $makhu =  ""; $magiuong = "";
 if(isset($_GET['makhu']))
 {
@@ -233,6 +233,28 @@ input[type=file] {
     cursor: text;
   }
 }
+
+/**
+ * Zoom Image On Mouse Over
+ */
+.item{
+	overflow: hidden;
+	
+}
+.item img{
+	-webkit-transition: 0.6s ease;
+		transition: 0.6s ease;
+		
+}
+.item img:hover{
+	-webkit-transform: scale(1.2);
+		transform: scale(1.2);
+
+}
+.img-thumbnail{
+    border:0px;
+    border-radius:0px;
+}
 </style>
 
 <script>
@@ -271,51 +293,84 @@ $(function() {
  	<div id="page-wrapper">
     <div class="col-md-12 graphs">
 	<div class="xs">
+		<?php //var_dump($_SESSION['img_response_err'] );
+	        if(  !empty( $_SESSION['img_response_err'] )  )
+	        {
+		        echo "<div class='alert alert-danger'>
+		              <strong>{$_SESSION['img_response_err']}
+		            </div>";
+		        unset($_SESSION['img_response_err']); 
+	        }
+	        if( !empty( $_SESSION['img_response_success'] ) )
+	        {
+	        	echo "<div class='alert alert-success'>
+		              <strong>{$_SESSION['img_response_success']}
+		            </div>";
+		        unset($_SESSION['img_response_success']); 
+	        }
+        ?>
 		
-		  <article id="main-content" role="main">  
+<article id="main-content" role="main">  
     <section class="container">
        <div class="row">
-          <div class="col-md-4">
-            <header>
-              <h1>Thêm hình ảnh KTV vào phần bên phải</h1>
-            </header>
-    
-          </div>
-      <div class="col-md-8">
-        <p>&nbsp;</p>
-        <h3 class="text-info">Upload hình KTV</h3>
-        <form action="img-upload/process.php" method="post" enctype="multipart/form-data">
-        	<label for="select-state">Chọn KTV:</label>
-        	<select id="select-state" placeholder="KTV..." name="ktv">
-        		<?php
-		        	$ktv_list = $order_ktv->getKTVlist(); var_dump($ktv_list);
-		        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
-		        	{ 
-		        		$r = sqlsrv_fetch_array($ktv_list);
-		        	?>
-				    <option value="<?=$r['MaNV']?>"><?=$r['TenNV']?></option>
-				    <?php
-					}
-				?>
-			</select>
-			<br>
-	        <!--file input example -->
-	        <span class="control-fileupload">
-	          <label for="file">Chọn ảnh từ máy tính:</label>
-	          <input type="file" id="file" name="files[]" multiple >
-	        </span>
-	        <br>
-	        <button type="submit" class="btn btn-info" value="UPLOAD" name="submit">Upload</button>
-	        <!--./file input example -->
-	    </form>
-        <p>&nbsp;</p>
-        <hr>
+	        <div class="col-md-4">
+	            <header>
+	              <h1>Thêm hình ảnh KTV vào phần bên phải</h1>
+	            </header>
+	    
+	        </div>
+		    <div class="col-md-8">
+		        <p>&nbsp;</p>
+		        <h3 class="text-info">Upload hình KTV</h3>
+		        <form action="img-upload/process.php" method="post" enctype="multipart/form-data">
+		        	<label for="select-state">Chọn KTV:</label>
+		        	<select id="select-state" placeholder="KTV..." name="ktv">
+		        		<?php
+				        	$ktv_list = $order_ktv->getKTVlist(); var_dump($ktv_list);
+				        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
+				        	{ 
+				        		$r = sqlsrv_fetch_array($ktv_list);
+				        	?>
+						    <option value="<?=$r['MaNV']?>"><?=$r['TenNV']?></option>
+						    <?php
+							}
+						?>
+					</select>
+					<br>
+			        <!--file input example -->
+			        <span class="control-fileupload">
+			          <label for="file">Chọn ảnh từ máy tính:</label>
+			          <input type="file" id="file" name="files[]" multiple >
+			        </span>
+			        <br>
+			        <button type="submit" class="btn btn-info" value="UPLOAD" name="submit">Upload</button>
+			        <!--./file input example -->
+			    </form>
+		  	</div>
+   		</div>
 
+	    <h2 class="text-center">Zoom Image On Mouse Over</h2>
+	    <div class="row">
+	    	<?php 
+	    	if( isset( $_SESSION['maktv'] ) )
+	    	{ 
+	 			$maktv = $_SESSION['maktv'];
+		    	$hinh_ktv = unserialize( $order_ktv->getKTVPicsByID( $maktv ) );//var_dump($hinh_ktv);
+		    	foreach( $hinh_ktv as $hinh )
+		    	{ 
+		    	?>
+			    <div class="col-sm-4">
+			        <div class="item"><img src="<?=$hinh?>" class="img-thumbnail"></div>
+			        <figcaption class="figure-caption"><?=basename($hinh)?></figcaption>
+				</div>
+			<?php }
+			}
+			?>
+	    </div>
 
-      </div>
-    </div>
   </section>
 </article>
+
 
 
 	</div>   

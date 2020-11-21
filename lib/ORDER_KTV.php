@@ -62,16 +62,17 @@ class ORDER_KTV extends DbConnection{
 			}
 	}
 
-	public function insertPics( $maktv, $fileNames ) {
+	public function insertPics( &$maktv, $fileNames ) {
 
 		$targetDir = dirname(__FILE__, 2) . '\images\ktv\\'; //echo dirname(__FILE__, 2);
+		$targetUrl = 'images/ktv/';
     	$allowTypes = array('jpg','png','jpeg','gif');
 
 		$statusMsg = $errorMsg =  $errorUpload = $errorUploadType = ''; 
 	    //var_dump ($_FILES['files']);
-	   // var_dump ($fileNames);
+	   var_dump ( $_FILES['files']['name'] );
 
-    	$img_files = array();
+    	$uploaded_img = array();
 		if(!empty($fileNames))
 		{
 			foreach( $fileNames as $key => $value )
@@ -79,54 +80,88 @@ class ORDER_KTV extends DbConnection{
 
 				 // File upload path 
 				$fileName =  basename( $fileNames[$key] ); 
-				$targetFilePath = $targetDir . $fileName; //var_dump ($targetFilePath);
+				$targetFilePath = $targetDir . $fileName;
+				$targetFileUrl =  $targetUrl . $fileName;			
 				
 				 // Check whether file type is valid 
 	            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 
 
-	            if( !in_array($fileType, $allowTypes) ){ 
-	            	$errorUploadType .= $_FILES['files']['name'][$key].' | '; 	
+	            if( !in_array($fileType, $allowTypes) )
+	            { 
+	            	$errorUploadType .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 	
 				}
-				else{ 
-					// Upload file to server 
-					if( !move_uploaded_file( $_FILES["files"]["tmp_name"][$key], $targetFilePath ) ){
-						$errorUpload .= $_FILES['files']['name'][$key].' | '; 
-					}
-					else{
-						$img_files[] = $targetFilePath;
-					}
+				// Upload file to server 
+				elseif( !move_uploaded_file( $_FILES["files"]["tmp_name"][$key], $targetFilePath ) )
+				{
+					$errorUpload .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 
+				}
+				else
+				{
+					
+					$uploaded_img[] = $targetFileUrl;
+				}
 	                
-	            } 
-
-		 	}
-		 	$img_files = serialize( $img_files );//var_dump($img_files);
-
-		 	$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET SourceHinhAnh = '$img_files' WHERE MaNV = '$maktv'";
-		 	$rs = sqlsrv_query($this->conn, $sql);
-
-			if ( $rs ) 
-			{
-				$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
-				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
-				$errorMsg = !empty($errorUpload)?'<br/>' . $errorUpload.'<br/>' . $errorUploadType:'<br/>'.$errorUploadType; 
-				
-				if ( !empty($errorUpload) )
-				 	$statusMsg = $errorMsg; 
-				elseif( empty($errorUpload) && empty($errorUploadType) )
-				 	$statusMsg = "Files are uploaded successfully.";
-			}
-			else
-			{ 
-	                $statusMsg = "Sorry, Pictures cannot be inserted into the database."; 
 	        }
+			
+	 		
+
+	 	 	$img_files = serialize( $uploaded_img );//var_dump($uploaded_img);
+
+		 	if ( !empty( $uploaded_img ) )
+		 	{
+		 		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET SourceHinhAnh = '$img_files' WHERE MaNV = '$maktv'";
+ 			 	$rs = sqlsrv_query($this->conn, $sql);
+ 	
+ 				if ( $rs ) 
+ 				{
+ 					$errorUpload = !empty( $errorUpload ) ? 'Upload Error: <ul>' . trim( $errorUpload, ' | ' ) . '</ul>' : ''; 
+ 					$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: <ul>'.trim($errorUploadType, ' | ') . '</ul>' : '';
+ 					$errorMsg = !empty($errorUpload)?'<br/>' . $errorUpload.'<br/>' . $errorUploadType:'<br/>'.$errorUploadType; 
+ 					
+ 					if ( !empty($errorUpload) || !empty($errorUploadType) )
+ 					 	$statusMsg = $errorMsg; 
+ 					if( empty($errorUpload) && empty($errorUploadType) )
+ 					 	$_SESSION['img_response_success'] = "All files are uploaded successfully.";
+ 				}
+ 				else
+ 				{ 
+ 		                $statusMsg = "Sorry, Pictures cannot be inserted into the database."; 
+ 		        }
+		 	}	
+		 	else
+		 	{	
+		 		$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
+ 				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
+		 		$errorMsg = !empty($errorUpload)?'<br/>' . $errorUpload.'<br/>' . $errorUploadType:'<br/>'.$errorUploadType;
+		 		$statusMsg = $errorMsg;
+		 	}
 		}
 		else
 		{ 
 	        $statusMsg = 'Please select a file to upload.'; 
 	    }
 
-		echo $statusMsg;  
+		 $_SESSION['img_response_err'] =  $statusMsg;
+
 	}
+
+	public function getKTVPicsByID( $maktv ){
+		$sql = "SELECT  [MaNV]  ,[TenNV] ,[SourceHinhAnh] FROM [MASSAGE_VL].[dbo].[tblDMNhanVien] where [MaNV] = '$maktv'";
+		try
+			{
+				$rs = sqlsrv_query( $this->conn,  $sql );
+				$r = sqlsrv_fetch_array( $rs ); //var_dump (unserialize($r['SourceHinhAnh']));
+				if( $rs != false) 
+					return $r['SourceHinhAnh'];
+				else die(print_r(sqlsrv_errors(), true));
+			}
+
+			catch ( PDOException $error ){
+				echo $error->getMessage();
+			}
+	}
+
+	
 
 
 
