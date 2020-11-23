@@ -50,7 +50,7 @@ $_SESSION['back'] = $_SERVER['REQUEST_URI'];
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
-<!-- Toggle -->
+<!-- Toggle: https://www.bootstraptoggle.com/ -->
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
@@ -342,11 +342,15 @@ $(function() {
 
    	<form action="img-upload/pics-delete.php" method="post">
 	    <h2 class="text-center">Hình Ảnh KTV</h2>
+	    <!-- <div class="col-md-5"> -->
 	    <button type="submit" class="btn btn-danger btn-lg"  name="delete_pics" onclick="return confirm('Bạn có muốn xóa ko?');">
 			<i class="fa fa-trash-o"></i>
 			<input type="hidden" name="maban" value="<?=$maban;?>" />
 		</button>
-	    <input type="checkbox" id="checkAll" data-toggle="toggle" data-size="medium"  />
+		<!-- </div> -->
+	    <div class="col-md-6">
+	    	<input type="checkbox" id="checkAll" data-toggle="toggle" data-size="medium"  data-onstyle="warning"/></div>
+	    <hr>
 	    <div class="row">
 	    	<?php 
 	    	if( isset( $_SESSION['maktv'] ) )
@@ -362,7 +366,7 @@ $(function() {
 			    <div class="col-sm-4">
 			        <div class="item"><img src="<?=$v?>" class="img-thumbnail"></div>
 			        <figcaption class="figure-caption"><?=basename($v)?></figcaption>
-			        <input type="checkbox" class="pic_item" data-toggle="toggle" data-size="medium" name=pic_item[] value="<?=$k?>" />
+			        <input type="checkbox" class="pic_item" data-toggle="toggle" data-size="medium" name=pic_item[] value="<?=$k?>" data-onstyle="warning" />
 				</div>
 			<?php }
 			}

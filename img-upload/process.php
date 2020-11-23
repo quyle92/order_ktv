@@ -22,12 +22,12 @@ if(isset($_POST['submit'])){
     	$pictures = $order_ktv->insertPics( $maktv, $fileNames );
 	}    	
 
- //    if ( strlen( $_SESSION['back'] ) > 0 ){
-	// 	$back= $_SESSION['back']; 
-	// 	unset($_SESSION['back']);
-	// 	header("location:$back");
-	// } 
-	// else header("location: ../index.php");
+    if ( strlen( $_SESSION['back'] ) > 0 ){
+		$back= $_SESSION['back']; 
+		unset($_SESSION['back']);
+		header("location:$back");
+	} 
+	else header("location: ../index.php");
 
      
 }
