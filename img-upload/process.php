@@ -11,7 +11,15 @@ if(isset($_POST['submit'])){
 	$maktv = $_POST['ktv'];
 	$_SESSION['maktv'] = $maktv;
     $fileNames = array_filter($_FILES['files']['name']);
-    $pictures = $order_ktv->insertPics( $maktv, $fileNames );
+
+    if( !empty ( $order_ktv->getKTVPicsByID( $maktv ) ) )
+    {
+    	$pictures = $order_ktv->updatePics( $maktv, $fileNames );
+    }
+    else
+    {
+    	$pictures = $order_ktv->insertPics( $maktv, $fileNames );
+	}    	
 
     if ( strlen( $_SESSION['back'] ) > 0 ){
 		$back= $_SESSION['back']; 

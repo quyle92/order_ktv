@@ -102,6 +102,28 @@ if(isset($_SESSION['MaGiuong']))
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/js/standalone/selectize.min.js" integrity="sha256-+C0A5Ilqmu4QcSPxrlGpaZxJ04VjsRjKu+G82kl5UJk=" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.12.6/css/selectize.bootstrap3.min.css" integrity="sha256-ze/OEYGcFbPRmvCnrSeKbRTtjG4vGLHXgOqsyLFTRjg=" crossorigin="anonymous" />
 
+<!-- Toggle -->
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
+<script>
+      /**
+       * boostrap toogle
+      */
+$(document).ready(function () {
+	$("input#checkAll").change(function() {
+	  if ($(this).is(":checked")) {console.log("on");
+	      $('input.pic_item').bootstrapToggle('on');
+	  }
+
+	  if (!$(this).is(":checked")) {console.log("off");
+	      $('input.pic_item').bootstrapToggle('off');
+	  }
+	});
+
+});
+
+</script>
 <style>
 /*basic settings */
 
@@ -324,7 +346,7 @@ $(function() {
 		        <h3 class="text-info">Upload hình KTV</h3>
 		        <form action="img-upload/process.php" method="post" enctype="multipart/form-data">
 		        	<label for="select-state">Chọn KTV:</label>
-		        	<select id="select-state" placeholder="KTV..." name="ktv">
+		        	<select id="select-state" placeholder="KTV..." name="ktv" required>
 		        		<?php
 				        	$ktv_list = $order_ktv->getKTVlist(); var_dump($ktv_list);
 				        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
@@ -340,7 +362,7 @@ $(function() {
 			        <!--file input example -->
 			        <span class="control-fileupload">
 			          <label for="file">Chọn ảnh từ máy tính:</label>
-			          <input type="file" id="file" name="files[]" multiple >
+			          <input type="file" id="file" name="files[]" multiple required>
 			        </span>
 			        <br>
 			        <button type="submit" class="btn btn-info" value="UPLOAD" name="submit">Upload</button>
@@ -349,24 +371,35 @@ $(function() {
 		  	</div>
    		</div>
 
+   	<form action="img-upload/pics-delete.php" method="post">
 	    <h2 class="text-center">Zoom Image On Mouse Over</h2>
+	    <button type="submit" class="btn btn-danger btn-lg"  name="delete_pics" >
+			<i class="fa fa-trash-o"></i>
+			<input type="hidden" name="maban" value="<?=$maban;?>" />
+		</button>
+	    <input type="checkbox" id="checkAll" data-toggle="toggle" data-size="medium"  />
 	    <div class="row">
 	    	<?php 
 	    	if( isset( $_SESSION['maktv'] ) )
 	    	{ 
 	 			$maktv = $_SESSION['maktv'];
 		    	$hinh_ktv = unserialize( $order_ktv->getKTVPicsByID( $maktv ) );//var_dump($hinh_ktv);
-		    	foreach( $hinh_ktv as $hinh )
+		    	?>
+		    	<input type="hidden" name="maktv"  value="<?=$maktv?>" />
+		    	<?php
+		    	foreach( $hinh_ktv as $k => $v )
 		    	{ 
 		    	?>
 			    <div class="col-sm-4">
-			        <div class="item"><img src="<?=$hinh?>" class="img-thumbnail"></div>
-			        <figcaption class="figure-caption"><?=basename($hinh)?></figcaption>
+			        <div class="item"><img src="<?=$v?>" class="img-thumbnail"></div>
+			        <figcaption class="figure-caption"><?=basename($v)?></figcaption>
+			        <input type="checkbox" class="pic_item" data-toggle="toggle" data-size="medium" name=pic_item[] value="<?=$k?>" />
 				</div>
 			<?php }
 			}
 			?>
 	    </div>
+	</form>
 
   </section>
 </article>
