@@ -21,59 +21,7 @@ $id= isset( $_SESSION['MaNV'] ) ?: "";
 $tenktv = isset( $_SESSION['TenNV'] ) ?: "";
 $trungtam = "GIẢI PHÁP QUẢN LÝ BÁN HÀNG CHUYÊN NGHIỆP";
 $_SESSION['back'] = $_SERVER['REQUEST_URI'];
-$makhu =  ""; $magiuong = "";
-if(isset($_GET['makhu']))
-{
-	$makhu = $_GET['makhu'];
-}
-//
-//---xử lý có nhập món ko ?
-//
-$nhapmon = "0";
-if(@$_GET['nhapmon'] != null)
-{
-	$nhapmon = @$_GET['nhapmon'];
-}
-else 
-{
-	$nhapmon = "0";
-}
-//	lấy giá trị get khác
-//
-$maphieu = ""; 
-if(isset($_GET['maphieu']))
-{
-	$maphieu = $_GET['maphieu'];
-}
-if(isset($_GET['magiuong']))
-{
-	$magiuong = $_GET['magiuong'];
-}
-//
-//	lưu lại session khi click khu
-//
-if($makhu != null && $magiuong != "")
-{
-	$_SESSION['MaKhu'] = $makhu;
-	$_SESSION['MaGiuong'] = $magiuong;
-}
 
-if(isset($_SESSION['MaGiuong'])) 
-{
-	$magiuong = $_SESSION['MaGiuong'];
-	//
-	//	lay cac gia tri tu lich su phieus
-	//
-	$l_sql = "Select * from tblLichSuPhieu Where MaBan = '$magiuong' and DaTinhTien = 0 and PhieuHuy = 0";
-	$rs3=sqlsrv_query($conn,$l_sql);
-	while($r3=sqlsrv_fetch_array($rs3))
-	{
-		$maphieu = $r3['MaLichSuPhieu'];
-		$makhach = $r3['MaKhachHang'];
-		$tenkhach = $r3['TenKhachHang'];
-	}
-	sqlsrv_free_stmt( $rs3);
-}
 ?>
 <html>
 <head>
@@ -111,6 +59,7 @@ if(isset($_SESSION['MaGiuong']))
        * boostrap toogle
       */
 $(document).ready(function () {
+
 	$("input#checkAll").change(function() {
 	  if ($(this).is(":checked")) {console.log("on");
 	      $('input.pic_item').bootstrapToggle('on');
@@ -120,6 +69,26 @@ $(document).ready(function () {
 	      $('input.pic_item').bootstrapToggle('off');
 	  }
 	});
+
+	var first = true; 
+	$(".img-thumbnail").click(function() {
+
+		if( $(this) && first )
+		{
+			console.log("on");
+			$(this).parent().next().next().find('input.pic_item').bootstrapToggle('on');
+		}
+		else
+		{
+			console.log("off");
+  			$(this).parent().next().next().find('input.pic_item').bootstrapToggle('off');
+		}
+
+		first = !first; // Invert `first`
+
+	});
+	
+
 
 });
 
@@ -348,7 +317,7 @@ $(function() {
 		        	<label for="select-state">Chọn KTV:</label>
 		        	<select id="select-state" placeholder="KTV..." name="ktv" required>
 		        		<?php
-				        	$ktv_list = $order_ktv->getKTVlist(); var_dump($ktv_list);
+				        	$ktv_list = $order_ktv->getKTVlist(); //var_dump($ktv_list);
 				        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
 				        	{ 
 				        		$r = sqlsrv_fetch_array($ktv_list);
@@ -372,8 +341,8 @@ $(function() {
    		</div>
 
    	<form action="img-upload/pics-delete.php" method="post">
-	    <h2 class="text-center">Zoom Image On Mouse Over</h2>
-	    <button type="submit" class="btn btn-danger btn-lg"  name="delete_pics" >
+	    <h2 class="text-center">Hình Ảnh KTV</h2>
+	    <button type="submit" class="btn btn-danger btn-lg"  name="delete_pics" onclick="return confirm('Bạn có muốn xóa ko?');">
 			<i class="fa fa-trash-o"></i>
 			<input type="hidden" name="maban" value="<?=$maban;?>" />
 		</button>

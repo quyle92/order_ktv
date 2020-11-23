@@ -49,8 +49,8 @@ if( isset($_GET['select_ktv']))
 			if($maktv == $r2['MaNV'])
 			{ 	
 ?>				
-	            <button type="button" name="maktv" value="<?php echo $r2['MaNV']; ?>" class="hangban_active" data-toggle="modal" data-target="#product_view_active">
-	            	<img src="<?=$staff_pics[0]?>" class="img-responsive"  style="max-height: 100%;height:7em;margin: auto;">
+	            <button type="button" name="maktv" value="<?php echo $r2['MaNV']; ?>" class="hangban_active" data-toggle="modal" data-target="#product_view_active"><?=$r2['TenNV']?>
+	            	<img src="<?=$staff_pics[0]?>" class="img-responsive" style="margin: auto;">
 	        	</button>
 	            <!-- Popup Img -->
 				<div class="modal fade product_view" id="product_view_active">
@@ -130,8 +130,8 @@ if( isset($_GET['select_ktv']))
 			else
 			{	
 ?>
-				<button type="button" name="maktv" value="<?php echo $r2['MaNV']; ?>" class="hangban" data-toggle="modal" data-target="#product_view_<?=$r2['MaNV']?>" data-toggle="modal" data-target="#product_view">
-					<img src="<?=$staff_pics[0]?>" class="img-responsive" style="max-height: 100%;height:7em;margin: auto;">
+				<button type="button" name="maktv" value="<?php echo $r2['MaNV']; ?>" class="hangban" data-toggle="modal" data-target="#product_view_<?=$r2['MaNV']?>" data-toggle="modal" data-target="#product_view"><?=$r2['TenNV']?>
+					<img src="<?=$staff_pics[0]?>" class="img-responsive" style="margin: auto;">
 				</button>
 				<!-- Popup Img -->
 				<div class="modal fade product_view" id="product_view_<?=$r2['MaNV']?>">

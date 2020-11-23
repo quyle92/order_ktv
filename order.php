@@ -351,7 +351,7 @@ crossorigin="anonymous">
     text-transform: capitalize;
     border: 2px solid transparent;
     width: 112px;
-    height: 100px;
+    height: 100%;
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;
@@ -369,7 +369,7 @@ crossorigin="anonymous">
     text-transform: capitalize;
     border: 2px solid transparent;
     width: 112px;
-    height: 100px;
+    height: 100%;
     outline: none;
     cursor: pointer;
     -webkit-appearance: none;

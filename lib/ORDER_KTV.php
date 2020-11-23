@@ -62,7 +62,7 @@ class ORDER_KTV extends DbConnection{
 			}
 	}
 
-	public function insertPics( &$maktv, $fileNames ) {
+	public function insertPics( $maktv, $fileNames ) {
 
 		$targetDir = dirname(__FILE__, 2) . '\images\ktv\\'; //echo dirname(__FILE__, 2);
 		$targetUrl = 'images/ktv/';
@@ -103,7 +103,6 @@ class ORDER_KTV extends DbConnection{
 	                
 	        }
 			
-	 		
 
 	 	 	$img_files = serialize( $uploaded_img );//var_dump($uploaded_img);
 
@@ -116,12 +115,12 @@ class ORDER_KTV extends DbConnection{
  				{
  					$errorUpload = !empty( $errorUpload ) ? 'Upload Error: <ul>' . trim( $errorUpload, ' | ' ) . '</ul>' : ''; 
  					$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: <ul>'.trim($errorUploadType, ' | ') . '</ul>' : '';
- 					$errorMsg = !empty($errorUpload)?'<br/>' . $errorUpload.'<br/>' . $errorUploadType:'<br/>'.$errorUploadType; 
+ 					$errorMsg = !empty($errorUpload)? $errorUpload.'<br/>' . $errorUploadType: $errorUploadType; 
  					
  					if ( !empty($errorUpload) || !empty($errorUploadType) )
  					 	$statusMsg = $errorMsg; 
- 					if( empty($errorUpload) && empty($errorUploadType) )
- 					 	$_SESSION['img_response_success'] = "All files are uploaded successfully.";
+ 				
+ 				 	$_SESSION['img_response_success'] = "Files are uploaded successfully.";
  				}
  				else
  				{ 
@@ -165,16 +164,33 @@ class ORDER_KTV extends DbConnection{
 	{
 
 		$img_arr = unserialize( $this->getKTVPicsByID( $maktv ) );
+		$targetDir = dirname(__FILE__, 2) . '\images\ktv\\';
 
 		foreach( $img_arr as $k => $v ){
 
 			if( in_array($k, $pic_item_arr) )
 			{
+				$img_to_be_deleted = basename( $img_arr[$k] );
+				$file_name = $targetDir . $img_to_be_deleted;
+				
+				if ( file_exists( $file_name  ) ) {
+			        unlink( $file_name );
+			        echo 'File ' . $img_to_be_deleted . ' has been deleted';
+			    } 
+			    else {
+
+			        echo 'Could not delete "' . $img_to_be_deleted . '", file does not exist';
+			    }
+
 				unset( $img_arr[$k] );
+				
 			}
 		}
 
 		$img_arr_updated = serialize( $img_arr );
+		var_dump( $img_to_be_deleted);
+
+		//return; 
 
 		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET [SourceHinhAnh] = '$img_arr_updated' where MaNV ='$maktv'";
 		try
@@ -244,7 +260,7 @@ class ORDER_KTV extends DbConnection{
 			echo $errorMsg = $errorUploadType . $errorUploadDuplicate . $errorUpload; 
 	      
 	       	$updated_img_arr = serialize( array_merge( $current_img_arr, $uploaded_img )   ); 
-	        var_dump($uploaded_img);
+	        
 
 	 	 	//return; 
 		 	if ( !empty( $uploaded_img )  )

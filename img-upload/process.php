@@ -11,8 +11,9 @@ if(isset($_POST['submit'])){
 	$maktv = $_POST['ktv'];
 	$_SESSION['maktv'] = $maktv;
     $fileNames = array_filter($_FILES['files']['name']);
-
-    if( !empty ( $order_ktv->getKTVPicsByID( $maktv ) ) )
+    $current_img = unserialize( $order_ktv->getKTVPicsByID( $maktv ) );
+    
+    if( !empty ( $current_img ) )
     {
     	$pictures = $order_ktv->updatePics( $maktv, $fileNames );
     }
