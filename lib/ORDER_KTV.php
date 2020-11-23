@@ -115,7 +115,7 @@ class ORDER_KTV extends DbConnection{
  				{
  					$errorUpload = !empty( $errorUpload ) ? 'Upload Error: <ul>' . trim( $errorUpload, ' | ' ) . '</ul>' : ''; 
  					$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: <ul>'.trim($errorUploadType, ' | ') . '</ul>' : '';
- 					$errorMsg = !empty($errorUpload)? $errorUpload.'<br/>' . $errorUploadType: $errorUploadType; 
+ 					$errorMsg = !empty($errorUpload)? $errorUpload.'<br/>' . $errorUploadType : $errorUploadType; 
  					
  					if ( !empty($errorUpload) || !empty($errorUploadType) )
  					 	$statusMsg = $errorMsg; 
@@ -131,7 +131,7 @@ class ORDER_KTV extends DbConnection{
 		 	{	
 		 		$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
  				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
-		 		$errorMsg = !empty($errorUpload)?'<br/>' . $errorUpload.'<br/>' . $errorUploadType:'<br/>'.$errorUploadType;
+		 		$errorMsg = !empty( $errorUpload ) ? $errorUpload .'<br/>' . $errorUploadType : $errorUploadType;
 		 		$statusMsg = $errorMsg;
 		 	}
 		}
@@ -232,7 +232,7 @@ class ORDER_KTV extends DbConnection{
 				 // File upload path 
 				$fileName =  basename( $fileNames[$key] ); 
 				$targetFilePath = $targetDir . $fileName; //var_dump($targetFilePath );	
-				$current_img_arr = unserialize( $this->getKTVPicsByID( $maktv ) ); var_dump($current_img_arr );	
+				$current_img_arr = unserialize( $this->getKTVPicsByID( $maktv ) ); //var_dump($current_img_arr );	
 				$targetFileUrl =  $targetUrl . $fileName;	
 				 // Check whether file type is valid 
 	            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 
@@ -257,11 +257,9 @@ class ORDER_KTV extends DbConnection{
 				}
 	                
 	        }
-			echo $errorMsg = $errorUploadType . $errorUploadDuplicate . $errorUpload; 
 	      
 	       	$updated_img_arr = serialize( array_merge( $current_img_arr, $uploaded_img )   ); 
 	        
-
 	 	 	//return; 
 		 	if ( !empty( $uploaded_img )  )
 		 	{
@@ -275,8 +273,10 @@ class ORDER_KTV extends DbConnection{
  					$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
  					$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
  					
- 					if ( !empty($errorUpload) || !empty($errorUploadType) || !empty($errorUploadDuplicate) )
- 					 	$statusMsg = $errorMsg; 
+ 					
+ 					if ( !empty($errorUpload) || !empty($errorUploadType) || !empty($errorUploadDuplicate) ){
+ 					 	$statusMsg = $errorMsg; var_dump($statusMsg);
+ 					}
  				
  				 	$_SESSION['img_response_success'] = "Files are uploaded successfully.";
  				}
@@ -285,14 +285,13 @@ class ORDER_KTV extends DbConnection{
  		                $statusMsg = "Sorry, Pictures cannot be inserted into the database."; 
  		        }
 		 	}	
-		 	
-		 	if ( !empty( $errorMsg ) )
+		 	else
 		 	{	
 		 		$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
  				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
  				$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
 		 		$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
-		 		$statusMsg = $errorMsg;
+		 		$statusMsg = $errorMsg;//var_dump($statusMsg);
 		 	}
 		}
 		else

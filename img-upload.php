@@ -289,7 +289,7 @@ $(function() {
 	        {
 		        echo "<div class='alert alert-danger'>
 		              <strong>{$_SESSION['img_response_err']}
-		            </div>";
+		            </div>";var_dump( $_SESSION['img_response_err'] );
 		        unset($_SESSION['img_response_err']); 
 	        }
 	        if( !empty( $_SESSION['img_response_success'] ) )
