@@ -192,8 +192,8 @@ class ORDER_KTV extends DbConnection{
 	       	$updated_img_arr = serialize( array_merge( $current_img_arr, $uploaded_img )   ); 
 	        var_dump($updated_img_arr );
 
-	 	 	return; 
-	 	 	
+	 	 	//return; 
+
 		 	if ( !empty( $uploaded_img )  )
 		 	{
 		 		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET SourceHinhAnh = '$updated_img_arr' WHERE MaNV = '$maktv'";

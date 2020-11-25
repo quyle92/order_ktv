@@ -228,23 +228,29 @@ input[type=file] {
 /**
  * Zoom Image On Mouse Over
  */
-.item{
+.item {
 	overflow: hidden;
 	
 }
-.item img{
+
+.item img {
 	-webkit-transition: 0.6s ease;
 		transition: 0.6s ease;
 		
 }
-.item img:hover{
+
+.item img:hover {
 	-webkit-transform: scale(1.2);
 		transform: scale(1.2);
 
 }
-.img-thumbnail{
+.img-thumbnail {
     border:0px;
     border-radius:0px;
+}
+
+.form-inline .form-control{
+	width: 42%;
 }
 </style>
 
@@ -289,7 +295,7 @@ $(function() {
 	        {
 		        echo "<div class='alert alert-danger'>
 		              <strong>{$_SESSION['img_response_err']}
-		            </div>";var_dump( $_SESSION['img_response_err'] );
+		            </div>";
 		        unset($_SESSION['img_response_err']); 
 	        }
 	        if( !empty( $_SESSION['img_response_success'] ) )
@@ -313,29 +319,46 @@ $(function() {
 		    <div class="col-md-8">
 		        <p>&nbsp;</p>
 		        <h3 class="text-info">Upload hình KTV</h3>
-		        <form action="img-upload/process.php" method="post" enctype="multipart/form-data">
-		        	<label for="select-state">Chọn KTV:</label>
-		        	<select id="select-state" placeholder="KTV..." name="ktv" required>
-		        		<?php
-				        	$ktv_list = $order_ktv->getKTVlist(); //var_dump($ktv_list);
-				        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
-				        	{ 
-				        		$r = sqlsrv_fetch_array($ktv_list);
-				        	?>
-						    <option value="<?=$r['MaNV']?>"><?=$r['TenNV']?></option>
-						    <?php
-							}
-						?>
-					</select>
+		        <form action="img-upload/process.php" method="post" enctype="multipart/form-data" class="form form-inline"  role="form">
+		        	<div class="row">
+		        		<div class="form-group col-md-5">
+			        		<label for="select-state">Chọn KTV:</label>
+				        	<select id="select-state " placeholder="KTV..." name="ktv" required  class="form-control">
+				        		<option disabled selected></option>
+				        		<?php
+						        	$ktv_list = $order_ktv->getKTVlist(); //var_dump($ktv_list);
+						        	for( $i = 0; $i < sqlsrv_num_rows($ktv_list); $i++ )
+						        	{ 
+						        		$r = sqlsrv_fetch_array($ktv_list);
+						        	?>
+								    <option value="<?=$r['MaNV']?>"><?=$r['TenNV']?></option>
+								    <?php
+									}
+								?>
+							</select>
+						</div>
+						<div class="col-md-4">
+							<button type="submit" class="btn-sm btn btn-info" formaction="img-upload/get-current-img.php">Select</button>
+						</div>
+						<br>
+					</div>
+
 					<br>
 			        <!--file input example -->
-			        <span class="control-fileupload">
-			          <label for="file">Chọn ảnh từ máy tính:</label>
-			          <input type="file" id="file" name="files[]" multiple required>
-			        </span>
+			        <div class="row">
+			        	<div class="col-md-9">
+			        		 <label for="file">Chọn ảnh:</label>
+					        <span class="control-fileupload" class="form-control">
+					         	 <label for="file">Chọn ảnh từ máy tính:</label>
+					          <input type="file" id="file" name="files[]" multiple  placeholder="Chọn Hình KTV..." >
+					        </span>
+				   		</div>
+				   	</div>
 			        <br>
 			        <button type="submit" class="btn btn-info" value="UPLOAD" name="submit">Upload</button>
+			        
 			        <!--./file input example -->
+			        
 			    </form>
 		  	</div>
    		</div>
