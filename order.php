@@ -407,6 +407,16 @@ Light Box
 .pre-cost{text-decoration: line-through; color: #a5a5a5;}
 .space-ten{padding: 10px 0;}
 
+[id^="product_view_"] .modal-header 
+{
+  max-height: 4em;
+}
+
+[id^="product_view_"] .modal-title
+{
+  text-align: center;
+} 
+
 </style>
 
 </head>
@@ -416,7 +426,7 @@ Light Box
     <div class="col-md-12 graphs">
 	<div class="xs">
        	<div class="row">
-       		<div class="col-sm-6 col-md-10 col-md-offset-1" style="margin-bottom:5px">
+       		<div class="col-sm-12 col-md-10 col-md-offset-1" style="margin-bottom:5px">
 <?php
 			if($malichsuphieu != null && $malichsuphieu != "")
 			{

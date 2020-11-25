@@ -144,6 +144,97 @@ class ORDER_KTV extends DbConnection{
 
 	}
 
+	public function updatePics( $maktv, $fileNames )
+	{
+		$targetDir = dirname(__FILE__, 2) . '\images\ktv\\'; //echo dirname(__FILE__, 2);
+		$targetUrl = 'images/ktv/';
+    	$allowTypes = array('jpg','png','jpeg','gif');
+
+		$statusMsg = $errorMsg =  $errorUpload = $errorUploadType = $errorUploadDuplicate = ''; 
+	    //var_dump ($_FILES['files']);
+	   //var_dump ( $_FILES['files']['name'] );
+
+    	$uploaded_img = array();
+		if(!empty($fileNames))
+		{	$i = 0;
+			foreach( $fileNames as $key => $value )
+			{
+				 $i++; //echo $i. "\n";
+				 // File upload path 
+				$fileName =  basename( $fileNames[$key] ); 
+				$targetFilePath = $targetDir . $fileName; //var_dump($targetFilePath );	
+				$current_img_arr = unserialize( $this->getKTVPicsByID( $maktv ) ); //var_dump($current_img_arr );	
+				$targetFileUrl =  $targetUrl . $fileName;	
+				 // Check whether file type is valid 
+	            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 
+
+	            if( !in_array($fileType, $allowTypes) )
+	            { 
+	            	$errorUploadType .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 	
+				}
+				elseif( in_array( $targetFileUrl, $current_img_arr ) )
+				{
+					$errorUploadDuplicate .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 
+				}
+				// Upload file to server 
+				elseif( !move_uploaded_file( $_FILES["files"]["tmp_name"][$key], $targetFilePath ) )
+				{
+					$errorUpload .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 
+				}
+				else
+				{
+					//$targetFileUrl =  $targetUrl . $fileName;	
+					$uploaded_img[] = $targetFileUrl;
+				}
+	                
+	        }
+	      
+	       	$updated_img_arr = serialize( array_merge( $current_img_arr, $uploaded_img )   ); 
+	        var_dump($updated_img_arr );
+
+	 	 	return; 
+	 	 	
+		 	if ( !empty( $uploaded_img )  )
+		 	{
+		 		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET SourceHinhAnh = '$updated_img_arr' WHERE MaNV = '$maktv'";
+ 			 	$rs = sqlsrv_query($this->conn, $sql);
+ 	
+ 				if ( $rs ) 
+ 				{
+ 					$errorUpload = !empty( $errorUpload ) ? 'Upload Error: <ul>' . trim( $errorUpload, ' | ' ) . '</ul>' : ''; 
+ 					$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: <ul>'.trim($errorUploadType, ' | ') . '</ul>' : '';
+ 					$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
+ 					$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
+ 					
+ 					
+ 					if ( !empty($errorUpload) || !empty($errorUploadType) || !empty($errorUploadDuplicate) ){
+ 					 	$statusMsg = $errorMsg; var_dump($statusMsg);
+ 					}
+ 				
+ 				 	$_SESSION['img_response_success'] = "Files are uploaded successfully.";
+ 				}
+ 				else
+ 				{ 
+ 		                $statusMsg = "Sorry, Pictures cannot be inserted into the database."; 
+ 		        }
+		 	}	
+		 	else
+		 	{	
+		 		$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
+ 				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
+ 				$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
+		 		$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
+		 		$statusMsg = $errorMsg;//var_dump($statusMsg);
+		 	}
+		}
+		else
+		{ 
+	        $statusMsg = 'Please select a file to upload.'; 
+	    }
+
+		 $_SESSION['img_response_err'] =  $statusMsg;
+	}
+
 	public function getKTVPicsByID( $maktv ){
 		$sql = "SELECT  [MaNV]  ,[TenNV] ,[SourceHinhAnh] FROM [MASSAGE_VL].[dbo].[tblDMNhanVien] where [MaNV] = '$maktv'";
 		try
@@ -213,94 +304,7 @@ class ORDER_KTV extends DbConnection{
 		}
 	}
 
-	public function updatePics( $maktv, $fileNames )
-	{
-		$targetDir = dirname(__FILE__, 2) . '\images\ktv\\'; //echo dirname(__FILE__, 2);
-		$targetUrl = 'images/ktv/';
-    	$allowTypes = array('jpg','png','jpeg','gif');
-
-		$statusMsg = $errorMsg =  $errorUpload = $errorUploadType = $errorUploadDuplicate = ''; 
-	    //var_dump ($_FILES['files']);
-	   //var_dump ( $_FILES['files']['name'] );
-
-    	$uploaded_img = array();
-		if(!empty($fileNames))
-		{	$i = 0;
-			foreach( $fileNames as $key => $value )
-			{
-				 $i++; //echo $i. "\n";
-				 // File upload path 
-				$fileName =  basename( $fileNames[$key] ); 
-				$targetFilePath = $targetDir . $fileName; //var_dump($targetFilePath );	
-				$current_img_arr = unserialize( $this->getKTVPicsByID( $maktv ) ); //var_dump($current_img_arr );	
-				$targetFileUrl =  $targetUrl . $fileName;	
-				 // Check whether file type is valid 
-	            $fileType = pathinfo($targetFilePath, PATHINFO_EXTENSION); 
-
-	            if( !in_array($fileType, $allowTypes) )
-	            { 
-	            	$errorUploadType .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 	
-				}
-				elseif( in_array( $targetFileUrl, $current_img_arr ) )
-				{
-					$errorUploadDuplicate .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 
-				}
-				// Upload file to server 
-				elseif( !move_uploaded_file( $_FILES["files"]["tmp_name"][$key], $targetFilePath ) )
-				{
-					$errorUpload .= '<li>' . $_FILES['files']['name'][$key].' </li>'; 
-				}
-				else
-				{
-					//$targetFileUrl =  $targetUrl . $fileName;	
-					$uploaded_img[] = $targetFileUrl;
-				}
-	                
-	        }
-	      
-	       	$updated_img_arr = serialize( array_merge( $current_img_arr, $uploaded_img )   ); 
-	        
-	 	 	//return; 
-		 	if ( !empty( $uploaded_img )  )
-		 	{
-		 		$sql = "UPDATE [MASSAGE_VL].[dbo].[tblDMNhanVien] SET SourceHinhAnh = '$updated_img_arr' WHERE MaNV = '$maktv'";
- 			 	$rs = sqlsrv_query($this->conn, $sql);
- 	
- 				if ( $rs ) 
- 				{
- 					$errorUpload = !empty( $errorUpload ) ? 'Upload Error: <ul>' . trim( $errorUpload, ' | ' ) . '</ul>' : ''; 
- 					$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: <ul>'.trim($errorUploadType, ' | ') . '</ul>' : '';
- 					$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
- 					$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
- 					
- 					
- 					if ( !empty($errorUpload) || !empty($errorUploadType) || !empty($errorUploadDuplicate) ){
- 					 	$statusMsg = $errorMsg; var_dump($statusMsg);
- 					}
- 				
- 				 	$_SESSION['img_response_success'] = "Files are uploaded successfully.";
- 				}
- 				else
- 				{ 
- 		                $statusMsg = "Sorry, Pictures cannot be inserted into the database."; 
- 		        }
-		 	}	
-		 	else
-		 	{	
-		 		$errorUpload = !empty( $errorUpload ) ? 'Upload Error: ' . trim( $errorUpload, ' | ' ) : ''; 
- 				$errorUploadType = !empty( $errorUploadType ) ? 'File Type Error: '.trim($errorUploadType, ' | ') : '';
- 				$errorUploadDuplicate = !empty( $errorUploadDuplicate ) ? 'File Already Existed: '.trim($errorUploadDuplicate, ' | ') : '';
-		 		$errorMsg =  ( !empty($errorUpload) ) ? (  $errorUpload.'<br/>' . $errorUploadType .'<br/>' . $errorUploadDuplicate) : ( $errorUploadType . '<br/>' . $errorUploadDuplicate ); 
-		 		$statusMsg = $errorMsg;//var_dump($statusMsg);
-		 	}
-		}
-		else
-		{ 
-	        $statusMsg = 'Please select a file to upload.'; 
-	    }
-
-		 $_SESSION['img_response_err'] =  $statusMsg;
-	}
+	
 
 	
 
